@@ -80,3 +80,4 @@ history <- model %>%
 
 # save the entire model as a SavedModel
 save_model_tf(model, "results/example-model")
+
