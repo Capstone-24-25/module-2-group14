@@ -211,5 +211,6 @@ accuracy <- mean(test_predictions$pred_class == test_predictions$bclass_numeric)
 cat('Test Set Accuracy:', accuracy, '\n')
 
 
-
+# Test Set Accuracy: 0.7079439 without header
+# Test Set Accuracy: 0.7149533 with header
 
