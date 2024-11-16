@@ -118,52 +118,98 @@ library(keras)
 library(tensorflow)
 library(logisticPCA)
 library(dplyr)
+library(textrecipes)
 
-# path to activity files on repo
-url <- 'https://raw.githubusercontent.com/pstat197/pstat197a/main/materials/activities/data/'
+# load raw data
+load('data/claims-raw.RData')
 
-# load a few functions for the activity
-source(paste(url, 'projection-functions.R', sep = ''))
+# preprocess (will take a minute or two)
+claims_clean <- claims_raw %>%
+  parse_data()
 
-# load cleaned data
+# export
+save(claims_clean, file = 'data/claims-clean-example.RData')
+# Load cleaned data
 load('data/claims-clean-example.RData')
 
-# partition
-set.seed(110123)
+# Partition data
+set.seed(110122)
 partitions <- claims_clean %>%
   initial_split(prop = 0.8)
 
-# separate DTM from labels
-test_dtm <- testing(partitions) %>%
-  select(-.id, -bclass, -mclass)
-test_labels <- testing(partitions) %>%
-  select(.id, bclass, mclass)
+train_data <- training(partitions)
+test_data <- testing(partitions)
 
-# same, training set
-train_dtm <- training(partitions) %>%
-  select(-.id, -bclass, -mclass)
-train_labels <- training(partitions) %>%
-  select(.id, bclass, mclass)
+# Define preprocessing recipe
+recipe <- recipe(bclass ~ text_clean, data = train_data) %>%
+  step_tokenize(text_clean) %>%
+  step_stopwords(text_clean) %>%
+  step_tokenfilter(text_clean, max_tokens = 5000) %>%
+  step_tfidf(text_clean) 
 
-# find projections based on training data
-proj_out <- projection_fn(.dtm = train_dtm, .prop = 0.7)
-train_dtm_projected <- proj_out$data
+# Prepare the recipe
+prepared_recipe <- prep(recipe, training = train_data)
 
-# how many components were used?
-proj_out$n_pc
+# Extract the TF-IDF matrix for logistic PCA
+train_matrix <- bake(prepared_recipe, new_data = train_data) %>%
+  select(-bclass) %>%
+  as.matrix()
+
+test_matrix <- bake(prepared_recipe, new_data = test_data) %>%
+  select(-bclass) %>%
+  as.matrix()
+
+train_labels <- train_data$bclass
+test_labels <- test_data$bclass
+
+# Perform PCA on the TF-IDF matrix
+pca_result <- prcomp(train_matrix, scale. = TRUE)
+
+# Choose the number of components to keep (e.g., 10 components)
+num_components <- 10
+train_pca <- pca_result$x[, 1:num_components]
+
+# Apply PCA transformation on the test data
+test_pca <- predict(pca_result, newdata = test_matrix)[, 1:num_components]
+
+# Convert labels to factors for logistic regression
+train_labels <- as.factor(train_labels)
+test_labels <- as.factor(test_labels)
+
+# Create a tibble for model fitting
+train_data_pca <- as_tibble(train_pca) %>%
+  mutate(bclass = train_labels)
+
+test_data_pca <- as_tibble(test_pca) %>%
+  mutate(bclass = test_labels)
+
+# Define logistic regression model
+log_reg_model <- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification")
+
+# Fit logistic regression model
+log_reg_fit <- log_reg_model %>%
+  fit(bclass ~ ., data = train_data_pca)
+
 # CHECK TEST SET ACCURACY
 ##########################
-# Get predictions
-test_results <- log_reg_fit %>%
-  predict(test_data, type = "prob") %>%
-  bind_cols(test_data)
+# Predict on test set
+test_predictions <- log_reg_fit %>%
+  predict(new_data = test_data_pca, type = "prob") %>%
+  bind_cols(test_data_pca)
 
 # Convert probabilities to binary predictions
-test_results <- test_results %>%
-  mutate(pred_class = ifelse(.pred_1 > 0.5, 1, 0))
+test_predictions <- test_predictions %>%
+  mutate(pred_class = ifelse(`.pred_Relevant claim content` > 0.5, 1, 0),
+         pred_class = as.factor(pred_class),
+         bclass_numeric = ifelse(bclass == "Relevant claim content", 1, 0)
+         )
 
-# Calculate Accuracy
-accuracy <- mean(test_results$pred_class == as.numeric(test_data$bclass) - 1)
+# Calculate accuracy
+accuracy <- mean(test_predictions$pred_class == test_predictions$bclass_numeric)
 cat('Test Set Accuracy:', accuracy, '\n')
+
+
 
 
