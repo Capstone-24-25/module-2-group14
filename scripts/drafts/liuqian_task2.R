@@ -1,5 +1,6 @@
 library(tokenizers)
 
+<<<<<<< Updated upstream
 ## MODEL TRAINING (LPCA)
 ######################
 library(tidyverse)
@@ -105,4 +106,6 @@ cat('Test Set Accuracy:', accuracy, '\n')
 
 # Test Set Accuracy: 0.7079439 without header
 # Test Set Accuracy: 0.7149533 with header
+=======
+>>>>>>> Stashed changes
 
