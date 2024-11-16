@@ -58,3 +58,22 @@ nlp_fn <- function(parse_data.out){
   return(out)
 }
 
+nlp_fbi <- function(parse_data.out){
+  out <- parse_data.out %>% 
+    unnest_tokens(output = token, 
+                  input = text_clean, 
+                  token = 'words',
+                  stopwords = str_remove_all(stop_words$word, 
+                                             '[[:punct:]]')) %>%
+    mutate(token.lem = lemmatize_words(token)) %>%
+    filter(str_length(token.lem) > 2) %>%
+    count(.id, bclass, token.lem, name = 'n') %>%
+    bind_tf_idf(term = token.lem, 
+                document = .id,
+                n = 2) %>%
+    pivot_wider(id_cols = c('.id', 'bclass'),
+                names_from = 'token.lem',
+                values_from = 'tf_idf',
+                values_fill = 0)
+  return(out)
+}

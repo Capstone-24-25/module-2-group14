@@ -129,6 +129,7 @@ claims_clean <- claims_raw %>%
 
 # export
 save(claims_clean, file = 'data/claims-clean-example.RData')
+
 # Load cleaned data
 load('data/claims-clean-example.RData')
 
