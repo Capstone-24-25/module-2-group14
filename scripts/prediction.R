@@ -5,6 +5,8 @@ load('data/claims-test.RData')
 load('data/claims-raw.RData')
 source('scripts/preprocessing.R')
 tf_model <- load_model_tf('results/example-model')
+options(askYesNo = function(...) TRUE)
+
 
 # apply preprocessing pipeline
 clean_df <- claims_test %>%
@@ -30,3 +32,4 @@ pred_df <- clean_df %>%
   select(.id, bclass.pred)
 
 save(pred_df, file = 'results/example-preds.RData')
+
