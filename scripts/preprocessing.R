@@ -58,7 +58,6 @@ nlp_fn <- function(parse_data.out){
   return(out)
 }
 
-
 nlp_bigrams <- function(parse_data.out){
   out <- parse_data.out %>% 
     unnest_tokens(output = token, 
