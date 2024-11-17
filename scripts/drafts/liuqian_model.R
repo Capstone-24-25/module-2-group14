@@ -41,6 +41,7 @@ train_labels <- training(partitions) %>%
 #install_keras()
 
 # create a preprocessing layer
+set.seed(110122)
 preprocess_layer <- layer_text_vectorization(
   standardize = NULL,
   split = 'whitespace',
@@ -52,17 +53,19 @@ preprocess_layer <- layer_text_vectorization(
 preprocess_layer %>% adapt(train_text)
 
 # define NN architecture
+set.seed(110122)
 model <- keras_model_sequential() %>%
   preprocess_layer() %>%
-  layer_dropout(0.25) %>%
+  layer_dropout(0.22) %>%
   layer_dense(units = 25) %>%
-  layer_dropout(0.2) %>%
+  layer_dropout(0.16) %>%
   layer_dense(1) %>%
   layer_activation(activation = 'sigmoid')
 
 summary(model)
 
 # configure for training
+set.seed(110122)
 model %>% compile(
   loss = 'binary_crossentropy',
   optimizer = 'adam',
@@ -97,11 +100,7 @@ predicted_labels <- ifelse(predictions > 0.5, 1, 0)
 test_accuracy <- mean(predicted_labels == test_labels)
 cat('Test Set Accuracy:', test_accuracy, '\n')
 
-<<<<<<< Updated upstream
-# Test Set Accuracy: 0.7757009 
-=======
-# Test Set Accuracy: 0.8037383 
->>>>>>> Stashed changes
+# Test Set Accuracy: 0.8014019 
 
 ## SAVING MODEL
 ###############
