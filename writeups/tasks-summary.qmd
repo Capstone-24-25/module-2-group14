@@ -14,16 +14,16 @@ Disregarding header content, the predictions had an accuracy rate of 70.79%, whi
 
 Do bigrams capture additional information relevant to the classification of interest? Answer the question, **briefly** describe what analysis you conducted to arrive at your answer, and provide quantitative evidence supporting your answer.
 
-
+It appears that the use of bigrams decreased the classification accuracy of our model by a significant amount. While our model using unigrams yielded an accuracy of 71.50%, the model incorporating bigrams resulted in an accuracy of 53.74%. Our group chose to follow the same procedure that we used in task 1, but utilized the `step_ngram` function to implement the use of bigrams rather than singular tokens. This drastic decrease in accuracy could be attributed to overfitting in the logistic regression model as a result of adding the bigrams feature, which would then lead to a lower test accuracy. This result further suggests that any use of n-grams, regardless of the value of n, would cause the logistic regression model to perform worse than guessing between the classes. 
 
 ### Neural net
 
 Summarize the neural network model you trained by describing:
 
--   architecture
+-   architecture: Our model utilizes 5 layers total, with 3 of those being hidden. We do not specify an input shape to begin with, and the hidden layers contain unit counts of 64, 32, and 16, respectively, before the last layer outputs one unit. We also chose to employ the help of both the sigmoid and relu (rectified linear unit) activation functions within the network. We did so to give the model a trade-off between the benefits of these two different types of functions. Lastly, the `layer_dropout` function was used to randomly set inputted units into the last 3 layers as a means of protecting against overfitting. 
 
--   optimization and loss
+-   optimization and loss: Binary cross-entropy was used as our loss function that we wished to minimize, and we chose the adam optimization method to do so. Binary cross-entropy is the most commonly used loss function for binary classification, which is what our model was trying to predict in this scenario. Our group decided to use adam as the optimization method rather than a method such as stochastic gradient descent due to the faster pace that it possesses in reaching an optimal point. 
 
--   training epochs
+-   training epochs: Our group analyzed plots depicting the loss and binary accuracy curves across the different number of epochs in order to settle on 5 epochs, which we believe provided the best trade-off between the two metrics.  
 
--   predictive accuracy
+-   predictive accuracy: The neural network model resulted in a test set accuracy rate of **0.8130841**. 
