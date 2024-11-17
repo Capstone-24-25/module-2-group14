@@ -54,7 +54,7 @@ preprocess_layer %>% adapt(train_text)
 # define NN architecture
 model <- keras_model_sequential() %>%
   preprocess_layer() %>%
-  layer_dropout(0.2) %>%
+  layer_dropout(0.25) %>%
   layer_dense(units = 25) %>%
   layer_dropout(0.2) %>%
   layer_dense(1) %>%
@@ -97,19 +97,16 @@ predicted_labels <- ifelse(predictions > 0.5, 1, 0)
 test_accuracy <- mean(predicted_labels == test_labels)
 cat('Test Set Accuracy:', test_accuracy, '\n')
 
+<<<<<<< Updated upstream
 # Test Set Accuracy: 0.7757009 
+=======
+# Test Set Accuracy: 0.8037383 
+>>>>>>> Stashed changes
 
 ## SAVING MODEL
 ###############
 # save the entire model as a SavedModel
-save_model_tf(model, "results/example-model")
-
-claims_clean %>%
-  add_predictions(fit, type = 'response') %>%
-  mutate(est = as.factor(pred > 0.5), tr_c = as.factor(class)) %>%
-  class_metrics(estimate = est,
-                truth = tr_c, pred,
-                event_level = 'second')
+save_model_tf(model, "results/nn-model")
 
 
 ## MODEL TRAINING (LPCA)
@@ -148,7 +145,7 @@ recipe <- recipe(bclass ~ text_clean, data = train_data) %>%
   step_tokenize(text_clean) %>%
   step_stopwords(text_clean) %>%
   step_tokenfilter(text_clean, max_tokens = 5000) %>%
-  step_tfidf(text_clean) 
+  step_tfidf(text_clean)
 
 # Prepare the recipe
 prepared_recipe <- prep(recipe, training = train_data)
@@ -212,7 +209,6 @@ test_predictions <- test_predictions %>%
 # Calculate accuracy
 accuracy <- mean(test_predictions$pred_class == test_predictions$bclass_numeric)
 cat('Test Set Accuracy:', accuracy, '\n')
-
 
 # Test Set Accuracy: 0.7079439 without header
 # Test Set Accuracy: 0.7149533 with header
