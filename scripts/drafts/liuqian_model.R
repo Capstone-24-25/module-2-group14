@@ -97,6 +97,8 @@ predicted_labels <- ifelse(predictions > 0.5, 1, 0)
 test_accuracy <- mean(predicted_labels == test_labels)
 cat('Test Set Accuracy:', test_accuracy, '\n')
 
+# Test Set Accuracy: 0.7757009 
+
 ## SAVING MODEL
 ###############
 # save the entire model as a SavedModel
