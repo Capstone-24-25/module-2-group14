@@ -77,7 +77,7 @@ history <- model %>%
   fit(train_text, 
       train_labels,
       validation_split = 0.3,
-      epochs = 5)
+      epochs = 10)
 
 ## CHECK TEST SET ACCURACY
 ##########################

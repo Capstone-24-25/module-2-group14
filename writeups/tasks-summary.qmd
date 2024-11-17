@@ -20,7 +20,7 @@ Do bigrams capture additional information relevant to the classification of inte
 
 Summarize the neural network model you trained by describing:
 
--   architecture
+-   architecture 
 
 -   optimization and loss
 
