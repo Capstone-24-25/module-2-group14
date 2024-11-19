@@ -3,4 +3,12 @@
 .RData
 .Ruserdata
 .Rproj.user/C4D37536/pcs/files-pane.pper
+<<<<<<< Updated upstream
 .Rproj.user/C4D37536/pcs/source-pane.pper
+=======
+.Rproj.user/C4D37536/pcs/files-pane.pper
+.Rproj.user/C4D37536/pcs/source-pane.pper
+.Rproj.user/C4D37536/sources/prop/INDEX
+.Rproj.user/shared/notebooks/paths
+scripts/drafts/liuqian_model.R
+>>>>>>> Stashed changes
