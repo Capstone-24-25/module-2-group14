@@ -4,7 +4,7 @@ require(tensorflow)
 load('data/claims-test.RData')
 load('data/claims-raw.RData')
 source('scripts/preprocessing.R')
-tf_model <- load_model_tf('results/example-model')
+nn_model <- load_model_tf('results/nn-model')
 options(askYesNo = function(...) TRUE)
 
 
@@ -19,7 +19,7 @@ x <- clean_df %>%
   pull(text_clean)
 
 # compute predictions
-preds <- predict(tf_model, x) %>%
+preds <- predict(nn_model, x) %>%
   as.numeric()
 
 class_labels <- claims_raw %>% pull(bclass) %>% levels()
@@ -31,5 +31,5 @@ pred_df <- clean_df %>%
   bind_cols(bclass.pred = pred_classes) %>%
   select(.id, bclass.pred)
 
-save(pred_df, file = 'results/example-preds.RData')
+save(pred_df, file = 'results/bclass-preds.RData')
 
