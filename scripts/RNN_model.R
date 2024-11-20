@@ -1,4 +1,3 @@
-
 # can comment entire section out if no changes to preprocessing.R
 source('scripts/preprocessing.R')
 
@@ -12,87 +11,124 @@ claims_clean <- claims_raw %>%
 # export
 save(claims_clean, file = 'data/claims-clean-example.RData')
 
-## MODEL TRAINING (RNN)
-######################
-library(tidyverse)
-library(tidymodels)
+# Load required libraries
 library(keras)
 library(tensorflow)
+library(tidyverse)
+library(tidymodels)
 
-# load cleaned data
+# Load preprocessed data
 load('data/claims-clean-example.RData')
 
-# partition
+# Partition data into training and testing sets
 set.seed(110122)
 partitions <- claims_clean %>%
   initial_split(prop = 0.8)
 
 train_text <- training(partitions) %>%
   pull(text_clean)
-train_labels <- training(partitions) %>%
+train_labels_binary <- training(partitions) %>%
   pull(bclass) %>%
   as.numeric() - 1
+train_labels_multi <- training(partitions) %>%
+  pull(mclass) %>%
+  as.numeric() - 1
 
-# define vocabulary size and sequence length
-vocab_size <- 10000  # Maximum number of words in the vocabulary
-sequence_length <- 100  # Length of sequences (padding/truncation)
+test_text <- testing(partitions) %>%
+  pull(text_clean)
+test_labels_binary <- testing(partitions) %>%
+  pull(bclass) %>%
+  as.numeric() - 1
+test_labels_multi <- testing(partitions) %>%
+  pull(mclass) %>%
+  as.numeric() - 1
 
-# create a text vectorization layer
+# Define vocabulary size and sequence length
+vocab_size <- 10000
+sequence_length <- 100
+
+# Create and adapt the text vectorization layer
 preprocess_layer <- layer_text_vectorization(
   max_tokens = vocab_size,
   output_sequence_length = sequence_length
 )
-
-# adapt the layer on the training data
 preprocess_layer %>% adapt(train_text)
 
-# vectorize the text data
+# Preprocess data
 train_sequences <- preprocess_layer(train_text)
+test_sequences <- preprocess_layer(test_text)
 
-# define the RNN model architecture
-model <- keras_model_sequential() %>%
+# Define model for binary classification
+binary_model <- keras_model_sequential() %>%
   layer_embedding(input_dim = vocab_size, output_dim = 128, input_length = sequence_length) %>%
-  layer_lstm(units = 64, return_sequences = FALSE) %>%  # LSTM layer
+  layer_lstm(units = 64, return_sequences = FALSE) %>%
   layer_dropout(0.5) %>%
   layer_dense(units = 32, activation = 'relu') %>%
   layer_dropout(0.3) %>%
-  layer_dense(units = 1, activation = 'sigmoid')  # Output layer for binary classification
+  layer_dense(units = 1, activation = 'sigmoid')
 
-# summarize the model architecture
-summary(model)
-
-# compile the model
-model %>% compile(
+# Compile binary model
+binary_model %>% compile(
   loss = 'binary_crossentropy',
   optimizer = 'adam',
   metrics = 'binary_accuracy'
 )
 
-# train the model
-history <- model %>%
-  fit(
-    x = train_sequences,
-    y = train_labels,
-    validation_split = 0.2,
-    epochs = 10,  # Number of epochs
-    batch_size = 32  # Batch size
+# Train binary model
+binary_model %>% fit(
+  x = train_sequences,
+  y = train_labels_binary,
+  validation_split = 0.2,
+  epochs = 10,
+  batch_size = 32
+)
+
+# Save binary model
+save_model_tf(binary_model, "results/binary-model")
+
+# Define model for multi-class classification
+multi_model <- keras_model_sequential() %>%
+  layer_embedding(input_dim = vocab_size, output_dim = 128, input_length = sequence_length) %>%
+  layer_lstm(units = 64, return_sequences = FALSE) %>%
+  layer_dropout(0.5) %>%
+  layer_dense(units = 32, activation = 'relu') %>%
+  layer_dropout(0.3) %>%
+  layer_dense(units = length(unique(train_labels_multi)), activation = 'softmax')
+
+# Compile multi-class model
+multi_model %>% compile(
+  loss = 'sparse_categorical_crossentropy',
+  optimizer = 'adam',
+  metrics = 'sparse_categorical_accuracy'
+)
+
+# Train multi-class model
+multi_model %>% fit(
+  x = train_sequences,
+  y = train_labels_multi,
+  validation_split = 0.2,
+  epochs = 10,
+  batch_size = 32
+)
+
+# Save multi-class model
+save_model_tf(multi_model, "results/multi-model")
+
+# Generate predictions
+binary_preds <- binary_model %>% predict(test_sequences) %>% round()
+# Ensure multi_preds is properly indexed
+multi_preds <- as.numeric(multi_preds)  # Convert TensorFlow predictions to numeric
+
+# Format predictions into a data frame
+pred_df <- testing(partitions) %>%
+  select(.id) %>%
+  mutate(
+    bclass.pred = ifelse(binary_preds == 1, "Positive", "Negative"),
+    mclass.pred = levels(factor(claims_clean$mclass))[multi_preds + 1]
   )
 
-## EVALUATE ON TEST SET
-test_text <- testing(partitions) %>%
-  pull(text_clean)
-test_labels <- testing(partitions) %>%
-  pull(bclass) %>%
-  as.numeric() - 1
+# Export predictions
+write.csv(pred_df, "results/example-preds.csv", row.names = FALSE)
 
-# preprocess test data
-test_sequences <- preprocess_layer(test_text)
-
-# evaluate model
-metrics <- model %>% evaluate(test_sequences, test_labels)
-
-# print test set accuracy
-print(paste("Test set accuracy:", metrics["binary_accuracy"]))
-
-# save the entire model
-save_model_tf(model, "results/example-rnn-model")
+# Display results
+print(head(pred_df))
