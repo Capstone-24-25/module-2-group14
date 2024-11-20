@@ -343,7 +343,7 @@ test_labels <- test_data$mclass
 pca_result <- prcomp(train_matrix, scale. = TRUE)
 
 # Choose the number of components to keep (e.g., 10 components)
-num_components <- 10
+num_components <- 100
 train_pca <- pca_result$x[, 1:num_components]
 
 # Apply PCA transformation on the test data
@@ -385,5 +385,5 @@ test_predictions <- test_predictions %>%
 accuracy <- mean(test_predictions$pred_class == test_predictions$mclass)
 cat('Test Set Accuracy:', accuracy, '\n')
 
-# Test Set Accuracy: 0.7079439 
+# Test Set Accuracy: 0.771028 
 
