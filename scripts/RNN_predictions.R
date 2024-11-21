@@ -22,7 +22,7 @@ x_test <- clean_df %>%
   pull(text_clean)
 
 # Convert text to numerical sequences using the trained preprocessing layer
-test_sequences <- preprocess_layer(x_test)
+test_sequences <- preprocess_layer(as.array(x_test))
 
 # Generate binary predictions
 binary_preds <- binary_model %>%
@@ -53,5 +53,4 @@ pred_df <- clean_df %>%
 write.csv(pred_df, "results/rnn_predictions.csv", row.names = FALSE)
 
 # Display the predictions
-
 print(head(pred_df))
