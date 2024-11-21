@@ -1,6 +1,6 @@
 ---
 title: "Predictive modeling of claims status"
-author: 'Liuqian Bao, James San, Edwin Yang, Carter Kulm'
+author: 'Edwin Yang, Carter Kulm, James San, Liuqian Bao'
 date: today
 ---
 
@@ -20,7 +20,7 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
-Our group extracted all paragraph and header content from the HTML pages in the `claims_raw` data file, and subsequently removed all punctuation, numbers, symbols (including url and email instances) in order to make the classification process easier. Lastly, all characters were coerded to be lowercase. With the resulting text data, we applied the `layer_text_vectorization` function of the `keras` package in order to map strings to their respective token indices. Within this function we specified that the maximum amount of tokens to be used would be 10000 and set the sequence length of the output for this preprocessing layer to be padded or shortened to 100 tokens, due to the fact that the model will require a set input length. We then used `adapt` on the text vectorization layer which matches its internal layers to the training data. 
+> *In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized two consecutive words as a token, which creates a bigram.*
 
 ### Methods
 
@@ -32,8 +32,8 @@ Describe your final predictive models. Include one paragraph with details on the
 
 -   training method
 
-**Binary**: We used a recurrent neural network (RNN) for the binary classification of the fraud claims. Our group decided that the nature of our task is conducive towards a model that retains information well and use this past knowledge to inform decisions, and RNN's excel at this task due to their "recurrent" neurons that loop back to themselves. 
-
+>*Binary Classification: We used a RNN model as our method. The model uses an embedding layer to transform input sequences into dense vector representations, followed by an LSTM layer with 64 units to capture temporal dependencies in the data. It includes dropout layers (0.5 and 0.3) for regularization to reduce overfitting. Two dense layers are included, with the final dense layer using a sigmoid activation function for binary classification. The model is compiled with binary crossentropy as the loss function, optimized using the Adam optimizer, and evaluates performance with binary accuracy. Training is conducted over 11 epochs with a batch size of 32, using 20% of the training data for validation.*
+>*Multiclass Classification: We also used RNN for the multiclass setting. The model uses  an embedding layer that converts input sequences into dense vector representations. A Long Short-Term Memory (LSTM) layer with 64 units processes these sequences to capture temporal dependencies, followed by dropout layers (with rates of 0.5 and 0.3) to reduce overfitting. A dense layer with 32 units is added, and the final dense layer uses a softmax activation function to output probabilities across the number of classes, equal to the unique labels in the training data. The model is compiled with sparse categorical crossentropy as the loss function and evaluates performance using sparse categorical accuracy. It is trained over 11 epochs with a batch size of 32, using 20% of the training data for validation.*
 ### Results
 
 Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.[^1]
