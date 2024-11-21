@@ -39,3 +39,15 @@ Describe your final predictive models. Include one paragraph with details on the
 Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.[^1]
 
 [^1]: Read [this article](https://yardstick.tidymodels.org/articles/multiclass.html) on multiclass averaging.
+
+| Binary Model (RNN) |     |
+|--------------------|-----|
+| sensitivity        |     |
+| specificity        |     |
+| accuracy           |     |
+
+| Multiclass Model (RNN) |     |
+|------------------------|-----|
+| sensitivity            |     |
+| specificity            |     |
+| accuracy               |     |

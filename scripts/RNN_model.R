@@ -135,6 +135,8 @@ print(head(pred_df))
 ### Predictions
 ### Using Claims-test
 
+load('data/claims-test.RData')
+
 # Load trained RNN models
 binary_model <- load_model_tf("results/binary-model")
 multi_model <- load_model_tf("results/multi-model")
@@ -146,7 +148,6 @@ clean_df <- claims_test %>%
   parse_data() %>%  # Apply same preprocessing pipeline used for training
   select(.id, text_clean)
 
-
 # Prepare test input
 x_test <- clean_df %>%
   pull(text_clean)
@@ -155,14 +156,18 @@ x_test <- clean_df %>%
 test_sequences <- preprocess_layer(as.array(x_test))
 
 # Generate binary predictions
-binary_preds <- binary_model %>% predict(test_sequences) %>% round() 
+binary_preds <- binary_model %>%
+  predict(test_sequences) %>%
+  round()  # Convert probabilities to 0/1 predictions
 
 # Generate multi-class predictions
-multi_preds <- multi_model %>% predict(test_sequences) %>% k_argmax()
+multi_preds <- multi_model %>%
+  predict(test_sequences) %>%
+  k_argmax()  # Convert probabilities to class indices
 
 # Map predictions to class labels
-class_labels_binary <- c("Negative", "Positive")  
-class_labels_multi <- levels(factor(claims_clean$mclass))  
+class_labels_binary <- c("Negative", "Positive")  # Adjust based on your binary labels
+class_labels_multi <- levels(factor(claims_clean$mclass))  # Multi-class labels from training
 
 binary_pred_classes <- factor(binary_preds, labels = class_labels_binary)
 multi_pred_classes <- factor(as.numeric(multi_preds) + 1, labels = class_labels_multi)
@@ -174,6 +179,8 @@ pred_df <- clean_df %>%
     bclass.pred = binary_pred_classes,
     mclass.pred = multi_pred_classes
   )
+
+summary(pred_df)
 
 # Save predictions
 write.csv(pred_df, "results/rnn_predictions.csv", row.names = FALSE)
