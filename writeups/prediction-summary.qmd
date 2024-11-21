@@ -42,14 +42,17 @@ Indicate the predictive accuracy of the binary classifications and the multiclas
 
 [^1]: Read [this article](https://yardstick.tidymodels.org/articles/multiclass.html) on multiclass averaging.
 
-| Binary Model (RNN) |     |
-|--------------------|-----|
-| sensitivity        |     |
-| specificity        |     |
-| accuracy           |     |
+|     |
+|-----|
 
-| Multiclass Model (RNN) |     |
-|------------------------|-----|
-| sensitivity            |     |
-| specificity            |     |
-| accuracy               |     |
+| Binary Model (RNN) |       |
+|--------------------|-------|
+| sensitivity        | 0.842 |
+| specificity        | 0.703 |
+| accuracy           | 0.766 |
+
+| Multiclass Model (RNN) |       |
+|------------------------|-------|
+| sensitivity            | 0.538 |
+| specificity            | 0.892 |
+| accuracy               | 0.619 |
