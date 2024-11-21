@@ -135,6 +135,7 @@ print(head(pred_df))
 
 ### Using Claims-test
 
+load('data/claims-test.RData')
 
 # Load trained RNN models
 binary_model <- load_model_tf("results/binary-model")
@@ -177,11 +178,14 @@ pred_df <- clean_df %>%
     mclass.pred = multi_pred_classes
   )
 
+summary(pred_df)
+
 # Save predictions
 write.csv(pred_df, "results/rnn_predictions.csv", row.names = FALSE)
 
 # Display the predictions
 print(head(pred_df))
+
 
 
 
