@@ -1,3 +1,4 @@
+
 # can comment entire section out if no changes to preprocessing.R
 source('scripts/preprocessing.R')
 
@@ -43,14 +44,10 @@ test_labels_multi <- testing(partitions) %>%
   pull(mclass) %>%
   as.numeric() - 1
 
-# Define vocabulary size and sequence length
-vocab_size <- 10000
-sequence_length <- 100
-
 # Create and adapt the text vectorization layer
 preprocess_layer <- layer_text_vectorization(
-  max_tokens = vocab_size,
-  output_sequence_length = sequence_length
+  max_tokens = 10000,
+  output_sequence_length = 100
 )
 preprocess_layer %>% adapt(train_text)
 
@@ -60,10 +57,10 @@ test_sequences <- preprocess_layer(test_text)
 
 # Define model for binary classification
 binary_model <- keras_model_sequential() %>%
-  layer_embedding(input_dim = vocab_size, output_dim = 128, input_length = sequence_length) %>%
+  layer_embedding(input_dim = 10000, output_dim = 128, input_length = 100) %>%
   layer_lstm(units = 64, return_sequences = FALSE) %>%
   layer_dropout(0.5) %>%
-  layer_dense(units = 32, activation = 'relu') %>%
+  layer_dense(units = 32) %>%
   layer_dropout(0.3) %>%
   layer_dense(units = 1, activation = 'sigmoid')
 
@@ -79,7 +76,7 @@ binary_model %>% fit(
   x = train_sequences,
   y = train_labels_binary,
   validation_split = 0.2,
-  epochs = 10,
+  epochs = 11,
   batch_size = 32
 )
 
@@ -88,10 +85,10 @@ save_model_tf(binary_model, "results/binary-model")
 
 # Define model for multi-class classification
 multi_model <- keras_model_sequential() %>%
-  layer_embedding(input_dim = vocab_size, output_dim = 128, input_length = sequence_length) %>%
+  layer_embedding(input_dim = 10000, output_dim = 128, input_length = 100) %>%
   layer_lstm(units = 64, return_sequences = FALSE) %>%
   layer_dropout(0.5) %>%
-  layer_dense(units = 32, activation = 'relu') %>%
+  layer_dense(units = 32) %>%
   layer_dropout(0.3) %>%
   layer_dense(units = length(unique(train_labels_multi)), activation = 'softmax')
 
@@ -107,7 +104,7 @@ multi_model %>% fit(
   x = train_sequences,
   y = train_labels_multi,
   validation_split = 0.2,
-  epochs = 10,
+  epochs = 11,
   batch_size = 32
 )
 
@@ -117,19 +114,69 @@ save_model_tf(multi_model, "results/multi-model")
 # Generate predictions
 binary_preds <- binary_model %>% predict(test_sequences) %>% round()
 
-# Ensure multi_preds is properly indexed
-multi_preds <- as.numeric(multi_preds)  # Convert TensorFlow predictions to numeric
+multi_preds <- multi_model %>% predict(test_sequences) %>% k_argmax()
 
 # Format predictions into a data frame
+class_labels <- levels(factor(claims_clean$mclass))
+
 pred_df <- testing(partitions) %>%
   select(.id) %>%
   mutate(
     bclass.pred = ifelse(binary_preds == 1, "Positive", "Negative"),
-    mclass.pred = levels(factor(claims_clean$mclass))[multi_preds + 1]
+    mclass.pred = class_labels[as.numeric(multi_preds) + 1]  # Correct indexing
   )
 
 # Export predictions
-write.csv(pred_df, "results/example-preds.csv", row.names = FALSE)
+write.csv(pred_df, "results/preds_df.csv", row.names = FALSE)
 
 # Display results
 print(head(pred_df))
+
+### Predictions
+### Using Claims-test
+
+# Load trained RNN models
+binary_model <- load_model_tf("results/binary-model")
+multi_model <- load_model_tf("results/multi-model")
+
+# Preprocess claims-test data
+clean_df <- claims_test %>%
+  parse_data() %>%  # Apply same preprocessing pipeline used for training
+  select(.id, text_clean)
+
+
+# Prepare test input
+x_test <- clean_df %>%
+  pull(text_clean)
+
+# Convert text to numerical sequences using the trained preprocessing layer
+test_sequences <- preprocess_layer(as.array(x_test))
+
+# Generate binary predictions
+binary_preds <- binary_model %>% predict(test_sequences) %>% round() 
+
+# Generate multi-class predictions
+multi_preds <- multi_model %>% predict(test_sequences) %>% k_argmax()
+
+# Map predictions to class labels
+class_labels_binary <- c("Negative", "Positive")  
+class_labels_multi <- levels(factor(claims_clean$mclass))  
+
+binary_pred_classes <- factor(binary_preds, labels = class_labels_binary)
+multi_pred_classes <- factor(as.numeric(multi_preds) + 1, labels = class_labels_multi)
+
+# Format predictions into a data frame
+pred_df <- clean_df %>%
+  select(.id) %>%
+  mutate(
+    bclass.pred = binary_pred_classes,
+    mclass.pred = multi_pred_classes
+  )
+
+# Save predictions
+write.csv(pred_df, "results/rnn_predictions.csv", row.names = FALSE)
+
+# Display the predictions
+print(head(pred_df))
+
+

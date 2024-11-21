@@ -1,6 +1,6 @@
 ---
 title: "Predictive modeling of claims status"
-author: 'YOUR NAMES HERE'
+author: 'Edwin Yang, Carter Kulm, James San, Liuqian Bao'
 date: today
 ---
 
@@ -8,7 +8,7 @@ date: today
 
 Provide a 3-5 sentence summary of your work on the primary task. Indicate what input data was used, what method was used for binary class predictions, what method was used for multiclass predictions, and what estimated accuracies were achieved.
 
-> *Header and paragraph content was scraped from the raw webpages and processed into term frequencies of word tokens. For binary classification, a four-layer neural network yielded an estimated 81.3% accuracy; for multiclass classification, a support vector machine gave 78% accuracy.* 
+> *Header and paragraph content was scraped from the raw webpages and processed into term frequencies of word tokens. For binary classification, a four-layer neural network yielded an estimated 81.3% accuracy; for multiclass classification, a support vector machine gave 78% accuracy.*
 
 ### Preprocessing
 
@@ -20,7 +20,7 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
-
+> *In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized words in a bigram.*
 
 ### Methods
 
@@ -37,3 +37,15 @@ Describe your final predictive models. Include one paragraph with details on the
 Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.[^1]
 
 [^1]: Read [this article](https://yardstick.tidymodels.org/articles/multiclass.html) on multiclass averaging.
+
+| Binary Model (RNN) |     |
+|--------------------|-----|
+| sensitivity        |     |
+| specificity        |     |
+| accuracy           |     |
+
+| Multiclass Model (RNN) |     |
+|------------------------|-----|
+| sensitivity            |     |
+| specificity            |     |
+| accuracy               |     |
