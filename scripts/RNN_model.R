@@ -218,3 +218,26 @@ print(binary_metrics)
 cat("\nMulti-Class Classification Metrics:\n")
 print(multi_accuracy) 
 
+# Multi-Class Sensitivity and Specificity Calculation
+multi_metrics <- results %>%
+  group_by(true_mclass) %>%
+  summarise(
+    sensitivity = sum(mclass_pred == true_mclass) / sum(true_mclass == true_mclass),
+    specificity = sum(mclass_pred != true_mclass & true_mclass != true_mclass) /
+      sum(true_mclass != true_mclass)
+  )
+
+# Add overall accuracy for comparison
+overall_accuracy <- results %>%
+  metrics(truth = true_mclass, estimate = mclass_pred) %>%
+  filter(.metric == "accuracy")
+
+# Combine into a single table
+multi_class_results <- multi_metrics %>%
+  mutate(
+    accuracy = overall_accuracy$.estimate
+  )
+
+# Display multi-class metrics table
+cat("\nMulti-Class Metrics:\n")
+print(multi_class_results)
