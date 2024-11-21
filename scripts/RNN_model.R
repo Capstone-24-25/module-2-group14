@@ -172,7 +172,7 @@ pred_df <- clean_df %>%
 summary(pred_df)
 
 # Save predictions
-write.csv(pred_df, "results/rnn_predictions.csv", row.names = FALSE)
+write.csv(pred_df, "results/rnn_test_predictions.csv", row.names = FALSE)
 save(pred_df, file='results/preds_group14.RData')
 # Display the predictions
 print(head(pred_df))
