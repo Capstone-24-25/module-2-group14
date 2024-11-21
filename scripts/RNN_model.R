@@ -184,8 +184,48 @@ summary(pred_df)
 
 # Save predictions
 write.csv(pred_df, "results/rnn_predictions.csv", row.names = FALSE)
-
+save(pred_df, file='results/preds_group14.RData')
 # Display the predictions
 print(head(pred_df))
 
+### accuracy table 
+library(dplyr)
+library(yardstick)
+
+# Combine test labels and predictions into a data frame
+results <- testing(partitions) %>%
+  select(.id) %>%
+  mutate(
+    true_bclass = test_labels_binary,  # True labels for binary classification
+    true_mclass = test_labels_multi,  # True labels for multi-class classification
+    bclass_pred = as.numeric(binary_preds),  # Binary predictions (0/1)
+    mclass_pred = as.numeric(multi_preds)   # Multi-class predictions (index)
+  )
+
+# Convert binary labels to factors with appropriate levels
+results <- results %>%
+  mutate(
+    true_bclass = factor(true_bclass, levels = 0:1, labels = c("Negative", "Positive")),
+    bclass_pred = factor(bclass_pred, levels = 0:1, labels = c("Negative", "Positive")),
+    true_mclass = factor(true_mclass, levels = 0:(length(class_labels) - 1), labels = class_labels),
+    mclass_pred = factor(mclass_pred, levels = 0:(length(class_labels) - 1), labels = class_labels)
+  )
+
+# Binary classification metrics
+binary_metrics <- results %>%
+  metrics(truth = true_bclass, estimate = bclass_pred) %>%
+  filter(.metric %in% c("accuracy", "sensitivity", "specificity"))
+
+# Multi-class classification metrics (only accuracy available directly)
+multi_accuracy <- results %>%
+  metrics(truth = true_mclass, estimate = mclass_pred) %>%
+  filter(.metric %in% c("accuracy", "sensitivity", "specificity"))
+
+# Print binary metrics
+cat("Binary Classification Metrics:\n")
+print(binary_metrics)
+
+# Print multi-class accuracy
+cat("\nMulti-Class Classification Metrics:\n")
+print(multi_accuracy)
 

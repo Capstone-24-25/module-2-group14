@@ -43,4 +43,3 @@ pred_df <- clean_df %>%
   )
 
 save(pred_df, file = 'results/preds_group14.RData')
-
