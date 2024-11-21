@@ -90,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
 <li><p>how cleaned text was represented quantitatively</p></li>
 </ul>
 <blockquote class="blockquote">
-<p><em>In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized words in a bigram.</em></p>
+<p><em>In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized two consecutive words as a token, which creates a bigram.</em></p>
 </blockquote>
 </section>
 <section id="methods" class="level3">
@@ -101,10 +101,54 @@ ul.task-list li input[type="checkbox"] {
 <li><p>model specification and hyperparameter selection</p></li>
 <li><p>training method</p></li>
 </ul>
-</section>
-<section id="results" class="level3">
-<h3 class="anchored" data-anchor-id="results">Results</h3>
+<blockquote class="blockquote">
+<p><em>Binary Classification: We used a RNN model as our method. The model uses an embedding layer to transform input sequences into dense vector representations, followed by an LSTM layer with 64 units to capture temporal dependencies in the data. It includes dropout layers (0.5 and 0.3) for regularization to reduce overfitting. Two dense layers are included, with the final dense layer using a sigmoid activation function for binary classification. The model is compiled with binary crossentropy as the loss function, optimized using the Adam optimizer, and evaluates performance with binary accuracy. Training is conducted over 11 epochs with a batch size of 32, using 20% of the training data for validation.</em> <em>Multiclass Classification: We also used RNN for the multiclass setting. The model uses an embedding layer that converts input sequences into dense vector representations. A Long Short-Term Memory (LSTM) layer with 64 units processes these sequences to capture temporal dependencies, followed by dropout layers (with rates of 0.5 and 0.3) to reduce overfitting. A dense layer with 32 units is added, and the final dense layer uses a softmax activation function to output probabilities across the number of classes, equal to the unique labels in the training data. The model is compiled with sparse categorical crossentropy as the loss function and evaluates performance using sparse categorical accuracy. It is trained over 11 epochs with a batch size of 32, using 20% of the training data for validation.</em> ### Results</p>
+</blockquote>
 <p>Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Binary Model (RNN)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sensitivity</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>specificity</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>accuracy</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Multiclass Model (RNN)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sensitivity</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>specificity</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>accuracy</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
