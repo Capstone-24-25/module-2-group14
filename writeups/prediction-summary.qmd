@@ -32,6 +32,8 @@ Describe your final predictive models. Include one paragraph with details on the
 
 -   training method
 
+> *For both the binary and the multi-class prediction, we used the recurrent neural network model.*
+
 ### Results
 
 Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.[^1]

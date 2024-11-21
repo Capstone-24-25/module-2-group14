@@ -141,17 +141,8 @@ load('data/claims-test.RData')
 binary_model <- load_model_tf("results/binary-model")
 multi_model <- load_model_tf("results/multi-model")
 
-# Preprocess claims-test data
-clean_df <- claims_test %>%
-  parse_data() %>%  # Apply same preprocessing pipeline used for training
-  select(.id, text_clean)
-
-# Prepare test input
-x_test <- clean_df %>%
-  pull(text_clean)
-
 # Convert text to numerical sequences using the trained preprocessing layer
-test_sequences <- preprocess_layer(as.array(x_test))
+test_sequences <- preprocess_layer(as.array(test_text))
 
 # Generate binary predictions
 binary_preds <- binary_model %>%
@@ -225,5 +216,5 @@ print(binary_metrics)
 
 # Print multi-class accuracy
 cat("\nMulti-Class Classification Metrics:\n")
-print(multi_accuracy)
+print(multi_accuracy) 
 
