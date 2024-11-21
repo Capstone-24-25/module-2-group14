@@ -4,9 +4,8 @@ require(tensorflow)
 load('data/claims-test.RData')
 load('data/claims-raw.RData')
 source('scripts/preprocessing.R')
-nn_model <- load_model_tf('results/nn-model')
+multi_model <- load_model_tf('results/multi-model')
 options(askYesNo = function(...) TRUE)
-
 
 # apply preprocessing pipeline
 clean_df <- claims_test %>%

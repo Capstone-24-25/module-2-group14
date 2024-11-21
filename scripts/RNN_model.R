@@ -116,6 +116,7 @@ save_model_tf(multi_model, "results/multi-model")
 
 # Generate predictions
 binary_preds <- binary_model %>% predict(test_sequences) %>% round()
+
 # Ensure multi_preds is properly indexed
 multi_preds <- as.numeric(multi_preds)  # Convert TensorFlow predictions to numeric
 
