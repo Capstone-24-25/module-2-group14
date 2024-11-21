@@ -15,6 +15,36 @@
                 "type": 1,
                 "is_package_breakpoint": false,
                 "package_name": ""
+            },
+            {
+                "id": 1,
+                "path": "~/Pstat 197/module-2-group14/scripts/RNN_model.R",
+                "line_number": 84,
+                "function_steps": "",
+                "function_name": "toplevel",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 84,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 1,
+                "is_package_breakpoint": false,
+                "package_name": ""
+            },
+            {
+                "id": 2,
+                "path": "~/Pstat 197/module-2-group14/scripts/RNN_model.R",
+                "line_number": 112,
+                "function_steps": "",
+                "function_name": "toplevel",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 112,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 1,
+                "is_package_breakpoint": false,
+                "package_name": ""
             }
         ]
     }

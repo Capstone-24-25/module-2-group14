@@ -44,14 +44,10 @@ test_labels_multi <- testing(partitions) %>%
   pull(mclass) %>%
   as.numeric() - 1
 
-# Define vocabulary size and sequence length
-vocab_size <- 10000
-sequence_length <- 100
-
 # Create and adapt the text vectorization layer
 preprocess_layer <- layer_text_vectorization(
-  max_tokens = vocab_size,
-  output_sequence_length = sequence_length
+  max_tokens = 10000,
+  output_sequence_length = 100
 )
 preprocess_layer %>% adapt(train_text)
 
@@ -61,10 +57,10 @@ test_sequences <- preprocess_layer(test_text)
 
 # Define model for binary classification
 binary_model <- keras_model_sequential() %>%
-  layer_embedding(input_dim = vocab_size, output_dim = 128, input_length = sequence_length) %>%
+  layer_embedding(input_dim = 10000, output_dim = 128, input_length = 100) %>%
   layer_lstm(units = 64, return_sequences = FALSE) %>%
   layer_dropout(0.5) %>%
-  layer_dense(units = 32, activation = 'relu') %>%
+  layer_dense(units = 32) %>%
   layer_dropout(0.3) %>%
   layer_dense(units = 1, activation = 'sigmoid')
 
@@ -80,7 +76,7 @@ binary_model %>% fit(
   x = train_sequences,
   y = train_labels_binary,
   validation_split = 0.2,
-  epochs = 10,
+  epochs = 11,
   batch_size = 32
 )
 
@@ -89,10 +85,10 @@ save_model_tf(binary_model, "results/binary-model")
 
 # Define model for multi-class classification
 multi_model <- keras_model_sequential() %>%
-  layer_embedding(input_dim = vocab_size, output_dim = 128, input_length = sequence_length) %>%
+  layer_embedding(input_dim = 10000, output_dim = 128, input_length = 100) %>%
   layer_lstm(units = 64, return_sequences = FALSE) %>%
   layer_dropout(0.5) %>%
-  layer_dense(units = 32, activation = 'relu') %>%
+  layer_dense(units = 32) %>%
   layer_dropout(0.3) %>%
   layer_dense(units = length(unique(train_labels_multi)), activation = 'softmax')
 
@@ -108,7 +104,7 @@ multi_model %>% fit(
   x = train_sequences,
   y = train_labels_multi,
   validation_split = 0.2,
-  epochs = 10,
+  epochs = 11,
   batch_size = 32
 )
 
