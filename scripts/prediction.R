@@ -15,6 +15,7 @@ clean_df <- claims_test %>%
 # grab input
 x <- clean_df %>%
   pull(text_clean)
+x <- preprocess_layer(as.array(x))
 
 # Generate binary predictions
 binary_preds <- binary_model %>%
