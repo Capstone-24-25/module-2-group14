@@ -16,25 +16,30 @@ clean_df <- claims_test %>%
 x <- clean_df %>%
   pull(text_clean)
 
-# compute predictions
-preds_b <- predict(binary_model, x) %>%
-  as.numeric()
+# Generate binary predictions
+binary_preds <- binary_model %>%
+  predict(x) %>%
+  round()  # Convert probabilities to 0/1 predictions
 
-preds_m <- predict(multi_model, x) %>%
-  as.numeric()
+# Generate multi-class predictions
+multi_preds <- multi_model %>%
+  predict(x) %>%
+  k_argmax()  # Convert probabilities to class indices
 
-class_labels_b <- claims_raw %>% pull(bclass) %>% levels()
-class_labels_m <- claims_raw %>% pull(mclass) %>% levels()
+# Map predictions to class labels
+class_labels_binary <- c("Negative", "Positive")  # Adjust based on your binary labels
+class_labels_multi <- levels(factor(claims_clean$mclass))  # Multi-class labels from training
 
-pred_classes_b <- factor(preds_b > 0.5, labels = class_labels_b)
-pred_classes_m <- factor(preds_m > 0.5, labels = class_labels_m)
+binary_pred_classes <- factor(binary_preds, labels = class_labels_binary)
+multi_pred_classes <- factor(as.numeric(multi_preds) + 1, labels = class_labels_multi)
 
-
-# export (KEEP THIS FORMAT IDENTICAL)
+# Format predictions into a data frame
 pred_df <- clean_df %>%
-  bind_cols(bclass.pred = pred_classes_b) %>%
-  bind_cols(mclass.pred = pred_classes_m) %>%
-  select(.id, bclass.pred)
+  select(.id) %>%
+  mutate(
+    bclass.pred = binary_pred_classes,
+    mclass.pred = multi_pred_classes
+  )
 
 save(pred_df, file = 'results/preds_group14.RData')
 
