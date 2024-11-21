@@ -81,7 +81,7 @@ binary_model %>% fit(
 )
 
 # Save binary model
-save_model_tf(binary_model, "results/binary-model")
+save_model_tf(binary_model, "results/rnn_binary_model")
 
 # Define model for multi-class classification
 multi_model <- keras_model_sequential() %>%
@@ -109,7 +109,7 @@ multi_model %>% fit(
 )
 
 # Save multi-class model
-save_model_tf(multi_model, "results/multi-model")
+save_model_tf(multi_model, "results/rnn_multi_model")
 
 # Generate predictions
 binary_preds <- binary_model %>% predict(test_sequences) %>% round()
