@@ -200,44 +200,6 @@ results <- results %>%
     mclass_pred = factor(mclass_pred, levels = 0:(length(class_labels) - 1), labels = class_labels)
   )
 
-# Binary classification metrics
-binary_metrics <- results %>%
-  metrics(truth = true_bclass, estimate = bclass_pred) %>%
-  filter(.metric %in% c("accuracy", "sensitivity", "specificity"))
-
-# Multi-class classification metrics (only accuracy available directly)
-multi_accuracy <- results %>%
-  metrics(truth = true_mclass, estimate = mclass_pred) %>%
-  filter(.metric %in% c("accuracy", "sensitivity", "specificity"))
-
-# Print binary metrics
-cat("Binary Classification Metrics:\n")
-print(binary_metrics)
-
-# Print multi-class accuracy
-cat("\nMulti-Class Classification Metrics:\n")
-print(multi_accuracy) 
-
-# Multi-Class Sensitivity and Specificity Calculation
-multi_metrics <- results %>%
-  group_by(true_mclass) %>%
-  summarise(
-    sensitivity = sum(mclass_pred == true_mclass) / sum(true_mclass == true_mclass),
-    specificity = sum(mclass_pred != true_mclass & true_mclass != true_mclass) /
-      sum(true_mclass != true_mclass)
-  )
-
-# Add overall accuracy for comparison
-overall_accuracy <- results %>%
-  metrics(truth = true_mclass, estimate = mclass_pred) %>%
-  filter(.metric == "accuracy")
-
-# Combine into a single table
-multi_class_results <- multi_metrics %>%
-  mutate(
-    accuracy = overall_accuracy$.estimate
-  )
-
-# Display multi-class metrics table
-cat("\nMulti-Class Metrics:\n")
-print(multi_class_results)
+three_metrics <- metric_set(accuracy, sensitivity, specificity)
+binary_metrics <- three_metrics(results, truth = true_bclass, estimate = bclass_pred)
+multiclass_metrics <- three_metrics(results, truth = true_mclass, estimate = mclass_pred)
