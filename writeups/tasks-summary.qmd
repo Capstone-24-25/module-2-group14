@@ -1,6 +1,6 @@
 ---
 title: "Summary of exploratory tasks"
-author: 'Carter Kulm'
+author: 'Liuqian Bao, James San, Edwin Yang, Carter Kulm'
 date: today
 ---
 

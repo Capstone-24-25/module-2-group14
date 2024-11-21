@@ -1,6 +1,6 @@
 ---
 title: "Predictive modeling of claims status"
-author: 'Edwin Yang, Carter Kulm, James San, Liuqian Bao'
+author: 'Liuqian Bao, James San, Edwin Yang, Carter Kulm'
 date: today
 ---
 
@@ -20,7 +20,7 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
-> *In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized words in a bigram.*
+Our group extracted all paragraph and header content from the HTML pages in the `claims_raw` data file, and subsequently removed all punctuation, numbers, symbols (including url and email instances) in order to make the classification process easier. Lastly, all characters were coerded to be lowercase. With the resulting text data, we applied the `layer_text_vectorization` function of the `keras` package in order to map strings to their respective token indices. Within this function we specified that the maximum amount of tokens to be used would be 10000 and set the sequence length of the output for this preprocessing layer to be padded or shortened to 100 tokens, due to the fact that the model will require a set input length. We then used `adapt` on the text vectorization layer which matches its internal layers to the training data. 
 
 ### Methods
 
@@ -31,6 +31,8 @@ Describe your final predictive models. Include one paragraph with details on the
 -   model specification and hyperparameter selection
 
 -   training method
+
+**Binary**: We used a recurrent neural network (RNN) for the binary classification of the fraud claims. Our group decided that the nature of our task is conducive towards a model that retains information well and use this past knowledge to inform decisions, and RNN's excel at this task due to their "recurrent" neurons that loop back to themselves. 
 
 ### Results
 
