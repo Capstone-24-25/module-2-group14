@@ -139,6 +139,8 @@ print(head(pred_df))
 binary_model <- load_model_tf("results/binary-model")
 multi_model <- load_model_tf("results/multi-model")
 
+load('data/claims-test.RData')
+
 # Preprocess claims-test data
 clean_df <- claims_test %>%
   parse_data() %>%  # Apply same preprocessing pipeline used for training
