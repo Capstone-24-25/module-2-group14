@@ -8,7 +8,7 @@ date: today
 
 Provide a 3-5 sentence summary of your work on the primary task. Indicate what input data was used, what method was used for binary class predictions, what method was used for multiclass predictions, and what estimated accuracies were achieved.
 
-> *Header and paragraph content was scraped from the raw webpages and processed into term frequencies of word tokens. For binary classification, a four-layer neural network yielded an estimated 81.3% accuracy; for multiclass classification, a support vector machine gave 78% accuracy.*
+> *Header and paragraph content was scraped from the raw webpages and processed into term frequencies of word tokens. For binary classification, a six-layer recurrent neural network yielded an estimated 76.6% accuracy. And for the multiclass classification, the same RNN gave 61.9% accuracy.*
 
 ### Preprocessing
 
@@ -20,7 +20,7 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
-> *In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized two consecutive words as a token, which creates a bigram.*
+> *In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, numbers, urls, emails, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We would apply a preprocessing layer `layer_text_vectorization` from the `keras` package which maps these words to their tokenized index counterparts, and subsequently applied the `adapt` function which helped to supply our RNN with the learned vocabulary.*
 
 ### Methods
 
@@ -32,9 +32,9 @@ Describe your final predictive models. Include one paragraph with details on the
 
 -   training method
 
-> ***Binary Classification**: We used a RNN model as our method. The model uses an embedding layer to transform input sequences into dense vector representations, followed by an LSTM layer with 64 units to capture temporal dependencies in the data. It includes dropout layers (0.5 and 0.3) for regularization to reduce overfitting. Two dense layers are included, with the final dense layer using a sigmoid activation function for binary classification. The model is compiled with binary crossentropy as the loss function, optimized using the Adam optimizer, and evaluates performance with binary accuracy. Training is conducted over 11 epochs with a batch size of 32, using 20% of the training data for validation.*
+> ***Binary Classification**: We used a RNN model as our method. The model uses an embedding layer to map the learned vocabulary into a learnable vector space for the RNN. This layer takes in the 10000 tokens specified by the preprocessing layer, each with a sequence length of 100, and outputs 128 vectors. We follow this with an LSTM layer with 64 units that captures temporal dependencies in the data, and gives the RNN its "recurrent" nature. It includes dropout layers (0.5 and 0.3) that regularize node inputs that help to reduce overfitting. Two dense layers are included, with the final dense layer using a sigmoid activation function for binary classification. The final layer outputs one unit, which corresponds to the prediction of class. The model is compiled with binary crossentropy as the loss function, optimized using the Adam optimizer, and evaluates performance with binary accuracy. Training is conducted over 11 epochs with a batch size of 32, using 20% of the training data for validation.*
 >
-> ***Multiclass Classification**: We also used RNN for the multiclass setting. The model uses an embedding layer that converts input sequences into dense vector representations. A Long Short-Term Memory (LSTM) layer with 64 units processes these sequences to capture temporal dependencies, followed by dropout layers (with rates of 0.5 and 0.3) to reduce overfitting. A dense layer with 32 units is added, and the final dense layer uses a softmax activation function to output probabilities across the number of classes, equal to the unique labels in the training data. The model is compiled with sparse categorical crossentropy as the loss function and evaluates performance using sparse categorical accuracy. It is trained over 11 epochs with a batch size of 32, using 20% of the training data for validation.*
+> ***Multiclass Classification**: Our multiclassification model is almost exactly the same as our binary classification. The only differences come near the end of the network, where we must output not one unit from our last layer but the amount of units that correspond to the number of classification labels (5, in our case). Furthermore, we use a softmax activation function on this last layer rather than the sigmoid that was used for the binary model. *
 
 ### Results
 
