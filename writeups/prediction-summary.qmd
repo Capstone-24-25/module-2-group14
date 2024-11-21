@@ -1,6 +1,6 @@
 ---
 title: "Predictive modeling of claims status"
-author: 'YOUR NAMES HERE'
+author: 'Edwin Yang, Carter Kulm, James San, Liuqian Bao'
 date: today
 ---
 
@@ -20,7 +20,7 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
-In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized words in a bigram.
+> *In the original preprocessing code, it previously included only paragraph data. We added header content to include more data, since we expect header data to be more informative than paragraph data. How we cleaned the text was removing all of the punctuation, removed non-letter symbols, and lowercased all words. The cleaned text are words that appear in the data from header and paragraph content. We tokenized each word to be represented quantitatively, and for the ngrams we tokenized words in a bigram.*
 
 ### Methods
 
